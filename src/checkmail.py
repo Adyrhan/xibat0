@@ -67,7 +67,7 @@ class CheckMail():
             if e.code == 401:
                 print "Autorización fallida: Nombre y/o contraseña incorrectos."
                 n = pynotify.Notification("Xibat0 Mail", 
-                                      "El servicio Xibat0 Mail ha sido iniciado.")
+                                      "Nombre de usuario o contraseña incorrectos.")
                 n.show()
                 return "badcredentials"            
             else:

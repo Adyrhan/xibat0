@@ -78,8 +78,14 @@ class CheckMail():
             feed = ""
             cfile = ""
             while self.usr == "" or self.passwd == "" or feed == "badcredentials":
+                if feed == "badcredentials":
+                    #ask user new account data
+                    #encrypt it using id command output
+                    #save encripted data in ~/.xibato
+                    
                 #open credentials file
-                cfile = file(".xibato", "r") 
+                cfile = file(".xibato", "r")
+                 
                 #decrypt credentials file
                 #read credentials file and set usr and passwd
                 feed = self.get_feed()
