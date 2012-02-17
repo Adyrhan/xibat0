@@ -1,0 +1,8 @@
+This is Xibat0 Mail Notifier. 
+
+A script that runs in the background as a daemon and notifies new email from your gmail account.
+Uses libnotify, zenity, and libaes (aescrypt modified code, included in this package).
+
+This software is GNUv3 licensed.
+
+Written by Adrián Pérez Heredia.
