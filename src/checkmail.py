@@ -61,7 +61,7 @@ class CheckMail():
                 )
         opener = URL.build_opener(auth)
         URL.install_opener(opener)
-        print("Se procede a autentificarse con "+self.usr+" y "+self.passwd)
+        print("Se procede a autentificarse con "+self.usr)
         try:
             feed= URL.urlopen('https://mail.google.com/mail/feed/atom')
             return feed.read()
@@ -115,9 +115,7 @@ class CheckMail():
                  
                 #read credentials file and set usr and passwd
                 self.usr = cfile.readline().strip('\n')
-                print "Se ha leido del archivo el usuario: "+self.usr
                 self.passwd = cfile.readline().strip('\n')
-                print "Se ha leido del archivo el pass: "+self.passwd
                 cfile.close()
                 #encrypt credentials file again when closed
                 aescrypt.encrypt_stream(file(".xibato", "r"), file(".xibatotmp", "w"), key, len(key))
