@@ -81,10 +81,10 @@ class CheckMail():
             cfile = ""
             while self.usr == "" or self.passwd == "" or feed == "badcredentials" or feed == "":
                 if feed == "badcredentials":
-                    proc = subprocess.Popen("zenity --entry --text='Nombre de la cuenta'", stdout=subprocess.PIPE, shell=True)
+                    proc = subprocess.Popen("zenity --entry --title='Xibat0 Mail: Datos de la cuenta'--text='Nombre de la cuenta'", stdout=subprocess.PIPE, shell=True)
                     proc.wait()
                     self.usr = proc.communicate()[0]
-                    proc = subprocess.Popen("zenity --password --text='Contraseña'", stdout=subprocess.PIPE, shell=True)
+                    proc = subprocess.Popen("zenity --password --title='Xibat0 Mail: Datos de la cuenta' --text='Contraseña'", stdout=subprocess.PIPE, shell=True)
                     proc.wait()
                     self.passwd = proc.communicate()[0]
                     #encrypt it using id command output
