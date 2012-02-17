@@ -3,6 +3,7 @@
 import sys, os, gtk
 import pynotify, time
 import threading, subprocess
+import aescrypt
 import feedparser, urllib2 as URL
 from urllib2 import HTTPError, URLError
 
@@ -60,6 +61,7 @@ class CheckMail():
                 )
         opener = URL.build_opener(auth)
         URL.install_opener(opener)
+        print("Se procede a autentificarse con "+self.usr+" y "+self.passwd)
         try:
             feed= URL.urlopen('https://mail.google.com/mail/feed/atom')
             return feed.read()
@@ -79,15 +81,34 @@ class CheckMail():
             cfile = ""
             while self.usr == "" or self.passwd == "" or feed == "badcredentials":
                 if feed == "badcredentials":
-                    #ask user new account data
+                    proc = subprocess.Popen("zenity --entry --text='Nombre de la cuenta'", stdout=subprocess.PIPE, shell=True)
+                    proc.wait()
+                    self.usr = proc.communicate()[0]
+                    proc = subprocess.Popen("zenity --password --text='Contraseña'", stdout=subprocess.PIPE, shell=True)
+                    proc.wait()
+                    self.passwd = proc.communicate()[0]
                     #encrypt it using id command output
+                    f1 = file(".xibato", "w")
+                    f1.write(self.usr)
+                    f1.write(self.passwd)
+                    f1.close()
                     #save encripted data in ~/.xibato
                     
                 #open credentials file
-                cfile = file(".xibato", "r")
+                try:
+                    cfile = file(".xibato", "r")
+                except IOError, e:
+                    print "No existia el fichero, se creara una fichero nuevo"
+                    feed="badcredentials"
+                    continue
                  
                 #decrypt credentials file
                 #read credentials file and set usr and passwd
+                self.usr = cfile.readline().strip('\n')
+                print "Se ha leido del archivo el usuario: "+self.usr
+                self.passwd = cfile.readline().strip('\n')
+                print "Se ha leido del archivo el pass: "+self.passwd
+                cfile.close()
                 feed = self.get_feed()
             
             #usr and passwd no longer needed. removing data from ram.
