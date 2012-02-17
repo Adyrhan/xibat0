@@ -79,7 +79,7 @@ class CheckMail():
         while 1==1:
             feed = ""
             cfile = ""
-            while self.usr == "" or self.passwd == "" or feed == "badcredentials":
+            while self.usr == "" or self.passwd == "" or feed == "badcredentials" or feed == "":
                 if feed == "badcredentials":
                     proc = subprocess.Popen("zenity --entry --text='Nombre de la cuenta'", stdout=subprocess.PIPE, shell=True)
                     proc.wait()
@@ -88,27 +88,41 @@ class CheckMail():
                     proc.wait()
                     self.passwd = proc.communicate()[0]
                     #encrypt it using id command output
+                    proc = subprocess.Popen("id", stdout=subprocess.PIPE, shell=True)
+                    proc.wait()
+                    key = proc.communicate()[0]
                     f1 = file(".xibato", "w")
                     f1.write(self.usr)
                     f1.write(self.passwd)
                     f1.close()
-                    #save encripted data in ~/.xibato
-                    
-                #open credentials file
+                    aescrypt.encrypt_stream(file(".xibato", "r"), file(".xibatotmp", "w"), key, len(key))
+                    os.remove(".xibato")
+                    os.rename(".xibatotmp", ".xibato")
+                
                 try:
+                    #first decrypt with id output as key
+                    proc = subprocess.Popen("id", stdout=subprocess.PIPE, shell=True)
+                    proc.wait()
+                    key = proc.communicate()[0]
+                    aescrypt.decrypt_stream(file(".xibato", "r"), file(".xibatotmp", "w"), key, len(key))
+                    os.remove(".xibato")
+                    os.rename(".xibatotmp", ".xibato")
                     cfile = file(".xibato", "r")
                 except IOError, e:
                     print "No existia el fichero, se creara una fichero nuevo"
                     feed="badcredentials"
                     continue
                  
-                #decrypt credentials file
                 #read credentials file and set usr and passwd
                 self.usr = cfile.readline().strip('\n')
                 print "Se ha leido del archivo el usuario: "+self.usr
                 self.passwd = cfile.readline().strip('\n')
                 print "Se ha leido del archivo el pass: "+self.passwd
                 cfile.close()
+                #encrypt credentials file again when closed
+                aescrypt.encrypt_stream(file(".xibato", "r"), file(".xibatotmp", "w"), key, len(key))
+                os.remove(".xibato")
+                os.rename(".xibatotmp", ".xibato")
                 feed = self.get_feed()
             
             #usr and passwd no longer needed. removing data from ram.
@@ -136,6 +150,7 @@ class CheckMail():
                     self.idcache.remove(entryid)
                     
             time.sleep(60)
+            feed = ""
         #aqui nunca llega...
         print "Se ha cerrado el main loop gtk"
         gtk.main_quit()
